@@ -1,12 +1,12 @@
 #pragma once
 
+#include <Carbon/types/vector.h>
+
 #include <algorithm>
 #include <array>
 #include <bits/stdc++.h>
 
-// Physics Types
-namespace physics {
-
+// IVec3
 typedef std::array<int, 3> ivec3;
 
 // Axis-Aligned Bounding-Box
@@ -19,7 +19,7 @@ struct AABB {
 };
 
 // Sphere
-struct sphere {
+struct Sphere {
     vec3 *position;
 
     vec3 offset;
@@ -28,24 +28,23 @@ struct sphere {
 };
 
 // Triangle
-typedef vec3 triangle[3];
+typedef vec3 Triangle[3];
 
 // Physics Body
-struct body {
+struct Body {
     vec3 *position;
     vec3 *rotation;
 
     // Collider(s)
-    mesh *c;
+    // mesh *c;
     AABB aabb;
 
     std::set<ivec3> partitions;
 
     // Properties
-    bool isStatic =
-        false; //< static bodies have a collider, but forces don't effect them
-    bool collider = true; //< has collider?
-    bool gravity = true;  //< effected by gravity
+    bool isStatic = false; //< has collider, forces doesn't have effect
+    bool collider = true;  //< has collider
+    bool gravity = true;   //< effected by gravity
 
     float mass = 1.0f;
 
@@ -55,7 +54,7 @@ struct body {
 };
 
 // Physics Partition
-struct partition {
+struct Partition {
   private:
     std::map<ivec3, std::set<int>> objs; //< Spatial Partitions
 
@@ -106,17 +105,15 @@ struct partition {
 };
 
 // Physics World
-struct world {
+struct World {
     // Every Body in the Physics World
-    std::vector<body> b;
+    std::vector<Body> b;
     std::map<int, std::set<int>> collisions;
 
-    partition part;
+    Partition part;
 
     // The Physics World's Gravitational Force
-    float gravity = gravity::EARTH;
+    float gravity = 9.807f; // Earth's Gravity
 
     bool active = true; //< is the world running?
 };
-
-}; // namespace physics

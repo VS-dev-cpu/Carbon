@@ -12,6 +12,8 @@ project(Carbon VERSION 0.1.0)
 
 add_library(Carbon
     src/Carbon.cpp
+
+    src/types/vector.cpp
 )
 
 # Hello World Example

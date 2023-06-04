@@ -3,23 +3,13 @@
 #include <iostream>
 #include <pthread.h>
 
-#include <Carbon/collision.h>
+#include <Carbon/types/types.h>
 
-/* The Main Physics Engine */
-class Physics {
+class Carbon {
   private:
-    physics::world WORLD; // The "Shared" Physics World
-    bool writing = false;
-    bool reading = false;
+    World world;
 
     // std::vector<physics::body> toAdd;
-
-    // Threading
-    pthread_t thread;
-    bool threadState = false;
-
-    static void *process(void *p);
-    static void updatePhysicsWorld(Physics *p, physics::world *world);
 
     // Timing
     long past = 0;
@@ -28,70 +18,84 @@ class Physics {
   public:
     double deltaTime = 0.0f;
 
-    Physics(float partition_size = 10.0f);
-    ~Physics();
+    Carbon(float partition_size = 10.0f);
+    ~Carbon();
 
     void update();
 
-    int add(body *b, bool gravity = true, bool isStatic = false);
-
-    bool start();
-    bool stop();
+    int add(Body *b, bool gravity = true, bool isStatic = false);
 
     void blow(vec3 pos, float strength);
 };
 
 // Init Physics Engine
-Physics::Physics(float partition_size) {
+Carbon::Carbon(float partition_size) {
     // Setup World
-    WORLD.part.size = vec3(partition_size, partition_size, partition_size);
-
-    // Launch Thread
-    threadState = true;
-    int code = pthread_create(&thread, NULL, &process, (void *)this);
-
-    if (code != 0) {
-        threadState = false;
-        LOG::WARNING("physics()", "failed to start thread");
-    }
+    world.part.size = vec3(partition_size, partition_size, partition_size);
 
     now = time(true);
 }
 
 // Destroy Physics Engine
-Physics::~Physics() {
-    // Stop Physics Thread(s)
-    if (threadState == true) {
-        threadState = false;
-        pthread_join(thread, NULL);
-    }
-}
+Carbon::~Carbon() {}
 
 // Update Physics Engine
-void Physics::update() {
-    if (threadState) {
-        // TODO: Fix Update
-        /*
-         // Update World Information
-         reading = true;
-         while (writing)
-             ;
+void Carbon::update() {
+    // Timing
+    past = now;
+    now = time(true);
+    deltaTime = (double)(now - past) / 1000000.0;
 
-         if (WORLD.fresh)
-             world = WORLD;
-         WORLD.fresh = false;
+    // Update Physics World
 
-         reading = false;
-         */
-    } else {
-        // Calculate Changes on Main Thread
-        updatePhysicsWorld(this, &WORLD);
+    // Reset Collisions
+    world.collisions.clear();
+
+    // For Every Object (In Motion)
+    for (int i = 0; i < (int)world.b.size(); i++) {
+        Body *A = &world.b[i];
+
+        // Apply Forces
+        if (A->gravity)
+            A->velocity.y -= world.gravity * deltaTime;
+
+        // Move Object A
+        if (!A->isStatic) {
+            *A->position += A->velocity * deltaTime;
+            *A->rotation += A->angular_velocity * deltaTime;
+        }
+
+        // TODO: Update Partitions
+
+        // For Every Partition it's in
+        for (std::set<ivec3>::iterator j = A->partitions.begin();
+             j != A->partitions.end(); j++) //< TODO: fix itarators
+        {
+            std::set<int> o = world.part.get((*j)[0], (*j)[1], (*j)[2]);
+
+            // For Every Object in Partition
+            for (std::set<int>::iterator k = o.begin(); k != o.end(); k++) {
+                Body *B = &world.b[*k];
+
+                // Check Collisions
+                if (*k != i && !world.collisions[i].count(*k)) {
+                    // Check Collisions
+                    if (collision::detect(A->aabb, B->aabb)) {
+                        vec3 norm;
+                        if (collision::detect(*A, *B, norm)) {
+                            // Collision!
+                            world.collisions[i].insert(*k);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 // Link Body to Physics Engine
-int Physics::add(body *b, bool gravity, bool isStatic) {
-    physics::body pb;
+int Carbon::add(Body *b, bool gravity, bool isStatic) {
+    Body pb;
 
     pb.position = &b->position;
     pb.rotation = &b->rotation;
@@ -142,114 +146,12 @@ int Physics::add(body *b, bool gravity, bool isStatic) {
     pb.gravity = gravity;
     pb.isStatic = isStatic;
 
-    // Add Body
-    reading = true;
-    while (writing)
-        ;
-
-    int id = WORLD.b.size();
-    WORLD.b.push_back(pb);
-    std::vector<physics::ivec3> v = WORLD.part.add(pb.aabb, WORLD.b.size() - 1);
-    for (int i = 0; i < (int)v.size(); i++) {
-        WORLD.b[WORLD.b.size() - 1].partitions.insert(v[i]);
-    }
-
-    reading = false;
+    // Add Object
+    int id = world.b.size();
+    world.b.push_back(pb);
+    std::vector<ivec3> v = world.part.add(pb.aabb, world.b.size() - 1);
+    for (int i = 0; i < (int)v.size(); i++)
+        world.b[world.b.size() - 1].partitions.insert(v[i]);
 
     return id;
-}
-
-// Start Physics World
-bool Physics::start() {
-    if (WORLD.active)
-        return false;
-    WORLD.active = true;
-    return true;
-}
-
-// Stop Physics World
-bool Physics::stop() {
-    if (!WORLD.active)
-        return false;
-    WORLD.active = false;
-    return true;
-}
-
-// Update a Physics World
-void Physics::updatePhysicsWorld(Physics *p, physics::world *world) {
-    // Reset Collisions
-    world->collisions.clear();
-
-    // For Every Object (In Motion)
-    for (int i = 0; i < (int)world->b.size(); i++) {
-        physics::body *A = &world->b[i];
-
-        // Apply Forces
-        if (A->gravity)
-            A->velocity.y -= world->gravity * p->deltaTime;
-
-        // Move Object A
-        if (!A->isStatic) {
-            *A->position += A->velocity * p->deltaTime;
-            *A->rotation += A->angular_velocity * p->deltaTime;
-        }
-
-        // TODO: Update Partitions
-
-        // For Every Partition it's in
-        for (std::set<physics::ivec3>::iterator j = A->partitions.begin();
-             j != A->partitions.end(); j++) //< TODO: fix itarators
-        {
-            std::set<int> o = world->part.get((*j)[0], (*j)[1], (*j)[2]);
-
-            // For Every Object in Partition
-            for (std::set<int>::iterator k = o.begin(); k != o.end(); k++) {
-                physics::body *B = &world->b[*k];
-
-                // Check Collisions
-                if (*k != i && !world->collisions[i].count(*k)) {
-                    // Check Collisions
-                    if (physics::collision::detect(A->aabb, B->aabb)) {
-                        vec3 norm;
-                        if (physics::collision::detect(*A, *B, norm)) {
-                            // Collision!
-                            world->collisions[i].insert(*k);
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Simulate a Physics World
-void *Physics::process(void *arg) {
-    Physics *p = (Physics *)arg;
-    pthread_detach(pthread_self());
-
-    // TODO: Local (thread) World
-
-    p->now = time(true);
-    while (p->threadState) {
-        // Timing
-        p->past = p->now;
-        p->now = time(true);
-        p->deltaTime = (double)(p->now - p->past) / 1000000;
-
-        // Calculate Changes
-        // Update "Shared" Variable
-        while (p->reading)
-            ;
-        p->writing = true;
-
-        if (p->WORLD.active)
-            updatePhysicsWorld(p, &p->WORLD);
-
-        p->writing = false;
-    }
-
-    // Exit Thread
-    p->threadState = false;
-    pthread_exit(NULL);
-    return NULL;
 }
