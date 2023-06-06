@@ -5,8 +5,9 @@
 #include <algorithm>
 #include <array>
 #include <bits/stdc++.h>
+#include <unordered_map>
 
-// IVec3
+// (low effort) vec3, but integer
 typedef std::array<int, 3> ivec3;
 
 // Axis-Aligned Bounding-Box
@@ -32,23 +33,30 @@ typedef vec3 Triangle[3];
 
 // Physics Body
 struct Body {
-    vec3 *position;
-    vec3 *rotation;
+    // Transform
+    vec3 position;
+    vec3 rotation;
 
     // Collider(s)
-    // mesh *c;
+    std::any collider;
     AABB aabb;
 
+    // Partitions containing it
+    // TODO: Remove it
     std::set<ivec3> partitions;
 
     // Properties
-    bool isStatic = false; //< has collider, forces doesn't have effect
-    bool collider = true;  //< has collider
-    bool gravity = true;   //< effected by gravity
+    bool isStatic = false;   // has collider, forces doesn't have effect
+    bool hasCollider = true; // has collider
+    bool hasGravity = true;  // effected by gravity
 
+    // Physical Density (kg/m3)
     float mass = 1.0f;
 
-    // Physics Variables
+    // Physical Weight (kg)
+    float weight = 1.0f;
+
+    // Forces
     vec3 velocity;
     vec3 angular_velocity;
 };
@@ -56,10 +64,10 @@ struct Body {
 // Physics Partition
 struct Partition {
   private:
-    std::map<ivec3, std::set<int>> objs; //< Spatial Partitions
+    std::map<ivec3, std::set<int>> objs; // Spatial Partitions
 
   public:
-    vec3 size = vec3(10.0f, 10.0f, 10.0f); //< The Size of the Partitions
+    vec3 size = vec3(10.0f, 10.0f, 10.0f); // The Size of the Partitions
 
     // Get Partition Coordinate's for position
     void get(vec3 position, int &x, int &y, int &z) {
@@ -108,12 +116,11 @@ struct Partition {
 struct World {
     // Every Body in the Physics World
     std::vector<Body> b;
-    std::map<int, std::set<int>> collisions;
+    std::unordered_map<int, std::set<int>> collisions;
 
+    // World Partitioning
     Partition part;
 
     // The Physics World's Gravitational Force
     float gravity = 9.807f; // Earth's Gravity
-
-    bool active = true; //< is the world running?
 };
