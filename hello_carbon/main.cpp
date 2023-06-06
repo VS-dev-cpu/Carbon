@@ -18,7 +18,7 @@ int main() {
         C.update();
 
         // printf("%f\n", C.world.b[0].position.y);
-        printf("%f\n", C.world.b[0].position.y);
+        // printf("%f\n", C.world.b[0].position.y);
 
         db.draw(C.world.b[0], vec3(1, .4, 0));
     }

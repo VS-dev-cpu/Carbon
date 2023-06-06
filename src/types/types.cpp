@@ -3,13 +3,13 @@
 // AABB
 
 AABB AABB::operator+(vec3 position) {
-    return {this->offset + position,
-            this->x[0],
-            this->x[1],
-            this->y[0],
-            this->y[1],
-            this->z[0],
-            this->z[1]};
+    return {this->offset,
+            this->x[0] + position.x,
+            this->x[1] + position.x,
+            this->y[0] + position.y,
+            this->y[1] + position.y,
+            this->z[0] + position.z,
+            this->z[1] + position.z};
 }
 
 // Sphere

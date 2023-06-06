@@ -31,7 +31,21 @@ class DebugRenderer {
   private:
     GLFWwindow *window = nullptr;
 
+    vec2 cameraRotation;
+    vec3 cameraPosition;
+
   private:
+    void setPerspectiveProjection(float fovY, float aspectRatio,
+                                  float nearPlane, float farPlane) {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glFrustum(-aspectRatio * nearPlane * tan(fovY / 2.0f),
+                  aspectRatio * nearPlane * tan(fovY / 2.0f),
+                  -nearPlane * tan(fovY / 2.0f), nearPlane * tan(fovY / 2.0f),
+                  nearPlane, farPlane);
+        glMatrixMode(GL_MODELVIEW);
+    }
+
     // Get DebugRenderer from Window
     static DebugRenderer *getRenderer(GLFWwindow *window) {
         return (DebugRenderer *)glfwGetWindowUserPointer(window);
@@ -57,23 +71,58 @@ class DebugRenderer {
             self->keyboard.erase(scancode);
     }
 
+    // Mouse Button Callback
+    static void callback_mouse(GLFWwindow *window, int button, int action,
+                               int mods) {
+        DebugRenderer *self = getRenderer(window);
+
+        if (button == GLFW_MOUSE_BUTTON_LEFT) {
+            if (action == GLFW_PRESS) {
+                self->keyboard.insert(-1);
+            } else
+                self->keyboard.erase(-1);
+        } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+            if (action == GLFW_PRESS)
+                self->keyboard.insert(-2);
+            else
+                self->keyboard.erase(-2);
+        } else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+            if (action == GLFW_PRESS)
+                self->keyboard.insert(-3);
+            else
+                self->keyboard.erase(-3);
+        }
+    }
+
     // Cursor Movement Callback
     static void callback_cursor(GLFWwindow *window, double x, double y) {
         DebugRenderer *self = getRenderer(window);
 
-        self->mouse.x = (x * 2.0f) / (float)self->width - 1.0f;
-        self->mouse.y = (y * -2.0f) / (float)self->height + 1.0f;
+        x = x / self->width * 2 - 1;
+        y = y / self->height * 2 - 1;
 
-        // glTranslatef(self->mouse.u, self->mouse.x, 0);
+        float xx = x, yy = y;
+
+        x -= self->mouse.x;
+        y -= self->mouse.y;
+
+        self->mouse.x = xx;
+        self->mouse.y = yy;
+
+        if (self->key("right"))
+            self->cameraPosition += vec3(x, -y, 0);
+        if (self->key("left")) {
+            self->cameraRotation += vec2(y, x) * 40;
+        }
     }
 
     // Scroll Movement Callback
     static void callback_scroll(GLFWwindow *window, double x, double y) {
         DebugRenderer *self = getRenderer(window);
 
-        glTranslatef(0, 0, y / 10.0f);
-
         self->scroll.x = x;
         self->scroll.y = y;
+
+        self->cameraPosition.z += y / 10.0f;
     }
 };
