@@ -28,6 +28,9 @@ struct Sphere {
     float radius = 1.0f;
 };
 
+// Mesh
+struct Mesh {};
+
 // Triangle
 typedef vec3 Triangle[3];
 
@@ -38,11 +41,11 @@ struct Body {
     vec3 rotation;
 
     // Collider(s)
-    std::any collider;
+    Mesh m;
     AABB aabb;
 
     // Partitions containing it
-    // TODO: Remove it
+    // TODO: something about it
     std::set<ivec3> partitions;
 
     // Properties

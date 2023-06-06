@@ -1,12 +1,10 @@
+#include "Carbon/collisions.h"
 #include <Carbon/Carbon.h>
 
 Carbon::Carbon(float partition_size) {
-    start = time();
-
     // Setup World
     world.part.size = vec3(partition_size, partition_size, partition_size);
-
-    past = -1;
+    now = time();
 }
 
 // Destroy Physics Engine
@@ -17,7 +15,7 @@ void Carbon::update() {
     // Timing
     past = now;
     now = time();
-    deltaTime = ((now - past) > maxDelta ? maxDelta : (now - past));
+    deltaTime = (float)(now - past);
 
     // Update Physics World
 
@@ -36,28 +34,29 @@ void Carbon::update() {
         if (!A->isStatic) {
             A->position += A->velocity * deltaTime;
             A->rotation += A->angular_velocity * deltaTime;
+
+            // A->velocity = 0;
         }
 
         // TODO: Update Partitions
 
         // For Every Partition it's in
-        for (std::set<ivec3>::iterator j = A->partitions.begin();
-             j != A->partitions.end(); j++) //< TODO: fix itarators
+        for (auto j : A->partitions) //< TODO: fix itarators
         {
-            std::set<int> o = world.part.get((*j)[0], (*j)[1], (*j)[2]);
+            std::set<int> o = world.part.get(j[0], j[1], j[2]);
 
             // For Every Object in Partition
-            for (std::set<int>::iterator k = o.begin(); k != o.end(); k++) {
-                Body *B = &world.b[*k];
+            for (auto k : o) {
+                Body *B = &world.b[k];
 
                 // Check Collisions
-                if (*k != i && !world.collisions[i].count(*k)) {
+                if (k != i && !world.collisions[i].count(k)) {
                     // Check Collisions
-                    if (collision::detect(A->aabb, B->aabb)) {
+                    if (COLLISION::AABB_AABB(A->aabb, B->aabb)) {
                         vec3 norm;
-                        if (collision::detect(*A, *B, norm)) {
+                        if (COLLISION::BODY_BODY(*A, *B, norm)) {
                             // Collision!
-                            world.collisions[i].insert(*k);
+                            world.collisions[i].insert(k);
                         }
                     }
                 }
@@ -70,14 +69,17 @@ void Carbon::update() {
 int Carbon::add(Body *b, bool gravity, bool isStatic) {
     Body pb;
 
-    pb.position = &b->position;
-    pb.rotation = &b->rotation;
+    pb.position = b->position;
+    pb.rotation = b->rotation;
 
-    pb.c = &b->m;
+    // pb.c = b->c;
+
+    std::vector<vec3> vertices = {vec3(-0.5f, -0.5f, -0.5f),
+                                  vec3(0.5f, 0.5f, 0.5f)};
 
     // Get AABB
-    for (int i = 0; i < (int)b->m.vertices.size(); i++) {
-        vec3 p = b->m.vertices[i].position;
+    for (int i = 0; i < (int)vertices.size(); i++) {
+        vec3 p = vertices[i];
 
         if (p.x < pb.aabb.x[0])
             pb.aabb.x[0] = p.x;
@@ -94,7 +96,8 @@ int Carbon::add(Body *b, bool gravity, bool isStatic) {
         if (p.x > pb.aabb.z[1])
             pb.aabb.z[1] = p.z;
     }
-    pb.aabb.position = pb.position;
+
+    pb.aabb.position = &pb.position;
 
     // Get "MASS"
     vec3 size;
@@ -116,23 +119,23 @@ int Carbon::add(Body *b, bool gravity, bool isStatic) {
     }*/
 
     // Set Gravity
-    pb.gravity = gravity;
+    pb.hasGravity = gravity;
     pb.isStatic = isStatic;
 
     // Add Object
     int id = world.b.size();
     world.b.push_back(pb);
-    std::vector<ivec3> v = world.part.add(pb.aabb, world.b.size() - 1);
-    for (int i = 0; i < (int)v.size(); i++)
-        world.b[world.b.size() - 1].partitions.insert(v[i]);
+    // TODO: fix partitioning
+    // std::vector<ivec3> v = world.part.add(pb.aabb, world.b.size() - 1);
+    // for (int i = 0; i < (int)v.size(); i++)
+    //     world.b[world.b.size() - 1].partitions.insert(v[i]);
 
     return id;
 }
 
-double Carbon::time() {
-    return (std::chrono::duration_cast<std::chrono::microseconds>(
-                std::chrono::system_clock::now().time_since_epoch())
-                .count() /
-            1000000.0) -
-           start;
+float Carbon::time() {
+    static const auto startTime = std::chrono::high_resolution_clock::now();
+    const auto currentTime = std::chrono::high_resolution_clock::now();
+    const std::chrono::duration<float> duration = currentTime - startTime;
+    return duration.count();
 }

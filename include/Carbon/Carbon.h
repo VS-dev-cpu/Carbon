@@ -6,6 +6,10 @@
 
 #include <Carbon/types/types.h>
 
+#include <Carbon/collisions.h>
+
+#include <Carbon/debug/renderer.h>
+
 class Carbon {
   public:
     Carbon(float partition_size = 10.0f);
@@ -23,13 +27,11 @@ class Carbon {
 
   private:
     // Timing
-    long past = 0;
-    long now = 0;
-    double start = 0;
+    float past, now;
 
     // Max DeltaTime Value (in seconds)
     const long maxDelta = 2;
 
-  private:
-    double time();
+  public:
+    float time();
 };
