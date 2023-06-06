@@ -43,7 +43,7 @@ void Carbon::update() {
         // For Every Partition it's in
         for (auto j : A->partitions) //< TODO: fix itarators
         {
-            std::set<int> o = world.part.get(j[0], j[1], j[2]);
+            std::set<int> o = world.part.get(j);
 
             // For Every Object in Partition
             for (auto k : o) {
