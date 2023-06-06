@@ -7,35 +7,43 @@
 #include <bits/stdc++.h>
 #include <unordered_map>
 
-// (low effort) vec3, but integer
+// (low effort) 3D Intiger Vector (for Partition Indexing)
 typedef std::array<int, 3> ivec3;
 
 // Axis-Aligned Bounding-Box
 struct AABB {
-    vec3 *position;
+    vec3 offset;
 
     vec1 x[2];
     vec1 y[2];
     vec1 z[2];
+
+    AABB operator+(vec3 position);
 };
 
-// Sphere
 struct Sphere {
-    vec3 *position;
-
     vec3 offset;
 
     float radius = 1.0f;
-};
 
-// Mesh
-struct Mesh {};
+    Sphere operator+(vec3 position);
+};
 
 // Triangle
 typedef vec3 Triangle[3];
 
+// Mesh
+struct Mesh {
+    vec3 offset;
+
+    // std::vector<Triangle> tri;
+
+    // Mesh operator+(vec3 position) { return {this->offset + position}; }
+};
+
 // Physics Body
 struct Body {
+  public:
     // Transform
     vec3 position;
     vec3 rotation;
@@ -62,57 +70,43 @@ struct Body {
     // Forces
     vec3 velocity;
     vec3 angular_velocity;
+
+    // Add Velocity [Force]
+    void addVelocity(float amount, vec3 v);
+
+    // Add Angular Velocity [Force]
+    void addAngularVelocity(float amount, vec3 av, vec3 center = vec3());
+
+  private:
 };
 
 // Physics Partition
 struct Partition {
-  private:
-    std::map<ivec3, std::set<int>> objs; // Spatial Partitions
-
   public:
-    vec3 size = vec3(10.0f, 10.0f, 10.0f); // The Size of the Partitions
+    // The Size of the Partitions
+    vec3 size = vec3(10.0f, 10.0f, 10.0f);
 
     // Get Partition Coordinate's for position
-    void get(vec3 position, int &x, int &y, int &z) {
-        x = position.x / size.x;
-        y = position.y / size.y;
-        z = position.z / size.z;
-    }
+    void get(vec3 position, ivec3 &v);
 
     // Add ID to partition
-    void add(int x, int y, int z, int id) { objs[{x, y, z}].insert(id); }
+    void add(ivec3 pos, int id);
 
     // Add ID to a volume of partitions
-    std::vector<ivec3> add(int lx, int ly, int lz, int hx, int hy, int hz,
-                           int id) {
-        std::vector<ivec3> ret;
-
-        // bug
-        for (int x = lx; x < hx; x++)
-            for (int y = ly; y < hy; y++)
-                for (int z = lz; z < hz; z++) {
-                    add(x, y, z, id);
-                    ret.push_back({x, y, z});
-                }
-
-        return ret;
-    }
+    std::vector<ivec3> add(ivec3 low, ivec3 high, int id);
 
     // AutoAdd a Body to partition(s) by AABB
-    std::vector<ivec3> add(AABB collider, int id) {
-        int lx, ly, lz, hx, hy, hz;
-
-        get(vec3(collider.x[0], collider.y[0], collider.z[0]), lx, ly, lz);
-        get(vec3(collider.x[1], collider.y[1], collider.z[1]), hx, hy, hz);
-
-        return add(lx, ly, lz, hx, hy, hz, id);
-    }
+    std::vector<ivec3> add(AABB collider, int id);
 
     // Delete ID from partition
-    void del(int x, int y, int z, int id) { objs[{x, y, z}].erase(id); }
+    void del(ivec3 pos, int id);
 
     // Get Partition's Objects
-    std::set<int> get(int x, int y, int z) { return objs[{x, y, z}]; }
+    std::set<int> get(ivec3 pos);
+
+  private:
+    // Spatial Partitions
+    std::map<ivec3, std::set<int>> objs;
 };
 
 // Physics World

@@ -8,6 +8,8 @@ int main() {
 
     Body b;
 
+    b.position.x = 12.34f;
+
     printf("Added Body %i\n", C.add(&b));
 
     DebugRenderer db;

@@ -26,13 +26,13 @@ bool DETECT(vec1 a1, vec1 a2, vec1 b1, vec1 b2) {
 bool AABB_AABB(AABB a, AABB b) {
     // Calculate Real World Positions
     for (int i = 0; i < 2; i++) {
-        a.x[i] += a.position->x;
-        a.y[i] += a.position->y;
-        a.z[i] += a.position->z;
+        a.x[i] += a.offset.x;
+        a.y[i] += a.offset.y;
+        a.z[i] += a.offset.z;
 
-        b.x[i] += b.position->x;
-        b.y[i] += b.position->y;
-        b.z[i] += b.position->z;
+        b.x[i] += b.offset.x;
+        b.y[i] += b.offset.y;
+        b.z[i] += b.offset.z;
     }
 
     // Check Collision
@@ -50,13 +50,8 @@ bool AABB_AABB(AABB a, AABB b) {
 
 // Sphere - Sphere
 bool SPHERE_SPHERE(Sphere a, Sphere b) {
-    // Calculate Real World Center
-    vec3 center[2];
-    center[0] = *a.position + a.offset;
-    center[1] = *b.position + b.offset;
-
     // Check Collision
-    return center[0].distance(center[1]) <= (a.radius + b.radius);
+    return a.offset.distance(b.offset) <= (a.radius + b.radius);
 }
 
 // Triangle

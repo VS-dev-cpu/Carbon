@@ -52,7 +52,8 @@ void Carbon::update() {
                 // Check Collisions
                 if (k != i && !world.collisions[i].count(k)) {
                     // Check Collisions
-                    if (COLLISION::AABB_AABB(A->aabb, B->aabb)) {
+                    if (COLLISION::AABB_AABB(A->aabb + A->position,
+                                             B->aabb + B->position)) {
                         vec3 norm;
                         if (COLLISION::BODY_BODY(*A, *B, norm)) {
                             // Collision!
@@ -96,8 +97,6 @@ int Carbon::add(Body *b, bool gravity, bool isStatic) {
         if (p.x > pb.aabb.z[1])
             pb.aabb.z[1] = p.z;
     }
-
-    pb.aabb.position = &pb.position;
 
     // Get "MASS"
     vec3 size;
