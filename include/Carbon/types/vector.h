@@ -29,10 +29,18 @@ struct vec2 {
         float p[2];
     };
 
-    // ---- Operator Overloading (vec2)
+    // ---- Constructors
 
     // vec2(x, y) Constructor
-    vec2(float x = 0, float y = 0);
+    vec2(float x, float y);
+
+    // vec2({x, y}) Constructor
+    vec2(float xy[2]);
+
+    // vec2(xy) Constructor
+    vec2(float xy = 0.0f);
+
+    // ---- Operator Overloading (vec2)
 
     // [+] Operator (vec2)
     vec2 operator+(const vec2 v) const;
@@ -68,9 +76,6 @@ struct vec2 {
     bool operator!=(const vec2 v) const;
 
     // ---- Operator Overloading (float)
-
-    // vec2({x, y}) Constructor
-    vec2(float v[2]);
 
     // [+] Operator (float)
     vec2 operator+(const float v) const;
@@ -151,10 +156,18 @@ struct vec3 {
         float p[3];
     };
 
-    // ---- Operator Overloading (vec3)
+    // ---- Constructors
 
     // vec3(x, y, z) Constructor
-    vec3(float x = 0, float y = 0, float z = 0);
+    vec3(float x, float y, float z);
+
+    // vec3({x, y, z}) Constructor
+    vec3(float xyz[3]);
+
+    // vec3(xyz) Constructor
+    vec3(float xyz = 0.0f);
+
+    // ---- Operator Overloading (vec3)
 
     // [+] Operator (vec2)
     vec3 operator+(const vec3 v) const;
@@ -190,9 +203,6 @@ struct vec3 {
     bool operator!=(const vec3 v) const;
 
     // ---- Operator Overloading (float)
-
-    // vec3({x, y, z}) Constructor
-    vec3(float v[3]);
 
     // [+] Operator (float)
     vec3 operator+(const float v) const;

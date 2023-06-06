@@ -1,14 +1,20 @@
 #include <Carbon/types/vector.h>
+#include <linux/limits.h>
 
 // -------- Vec2 --------
 
-// vec2 ---- Operator Overloading (vec2)
+// vec2 ---- Constructors
 
 // vec2(x, y) Constructor
-vec2::vec2(float x, float y) {
-    this->p[0] = x;
-    this->p[1] = y;
-}
+vec2::vec2(float x, float y) { this->x = x, this->y = y; }
+
+// vec2({x, y}) Constructor
+vec2::vec2(float v[2]) { this->x = v[0], this->y = v[1]; }
+
+// vec2(xy) Constructor
+vec2::vec2(float v) { this->x = this->y = v; }
+
+// vec2 ---- Operator Overloading (vec2)
 
 // [+] vec2::operator (vec2)
 vec2 vec2::operator+(const vec2 v) const {
@@ -83,12 +89,6 @@ bool vec2::operator!=(const vec2 v) const {
 }
 
 // vec2 ---- Operator Overloading (float)
-
-// vec2({x, y}) Constructor
-vec2::vec2(float v[2]) {
-    this->p[0] = v[0];
-    this->p[1] = v[1];
-}
 
 // [+] Operator (float)
 vec2 vec2::operator+(const float v) const {
@@ -204,14 +204,18 @@ vec2 vec2::normalize() { return *this / this->length(); }
 
 // -------- Vec3 --------
 
-// vec3 ---- Operator Overloading (vec3)
+// vec3 ---- Constructors
 
 // vec3(x, y, z) Constructor
-vec3::vec3(float x, float y, float z) {
-    this->p[0] = x;
-    this->p[1] = y;
-    this->p[2] = z;
-}
+vec3::vec3(float x, float y, float z) { this->x = x, this->y = y, this->z = z; }
+
+// vec3({x, y, z}) Constructor
+vec3::vec3(float v[3]) { this->x = v[0], this->y = v[1], this->z = v[2]; }
+
+// vec3(xyz) Constructor
+vec3::vec3(float v) { this->x = v, this->y = v, this->z = v; }
+
+// vec3 ---- Operator Overloading (vec3)
 
 // [+] Operator (vec2)
 vec3 vec3::operator+(const vec3 v) const {
@@ -295,13 +299,6 @@ bool vec3::operator!=(const vec3 v) const {
 }
 
 // vec3 ---- Operator Overloading (float)
-
-// vec3({x, y, z}) Constructor
-vec3::vec3(float v[3]) {
-    this->p[0] = v[0];
-    this->p[1] = v[1];
-    this->p[2] = v[2];
-}
 
 // [+] Operator (float)
 vec3 vec3::operator+(const float v) const {
