@@ -25,8 +25,11 @@ int main() {
         // printf("%f\n", C.world.b[0].position.y);
         // printf("%f\n", C.world.b[0].position.y);
 
-        db.draw(C.world.b[0].aabb + C.world.b[0].position, vec3(1, 0, 0));
-        db.draw(C.world.b[1].aabb + C.world.b[1].position, vec3(1, .4, 0));
+        db.aabb(C.world.b[0].aabb + C.world.b[0].position, vec3(1, 0, 0));
+        db.aabb(C.world.b[1].aabb + C.world.b[1].position, vec3(1, 0, 1));
+
+        db.line(C.world.b[1].position,
+                C.world.b[1].position + C.world.b[1].velocity, vec3(0, 1, 0));
     }
 
     return 0;

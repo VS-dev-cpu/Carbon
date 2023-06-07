@@ -186,52 +186,64 @@ bool DebugRenderer::keyPress(std::string k) {
     return keyrelease.count(glfwGetKeyScancode(scancode)) > 0;
 }
 
-// Draw AABB
-void DebugRenderer::draw(AABB aabb, vec3 color, bool wireframe) {
+// Draw
+
+void DebugRenderer::line(vec3 start, vec3 end, vec3 color) {
     glColor3f(color.r, color.g, color.b);
 
-    // AABB aabb = b.aabb + b.position + b.aabb.offset;
+    glBegin(GL_LINES);
 
-    aabb = aabb + aabb.offset;
+    glVertex3f(start.x, start.y, start.z);
+    glVertex3f(end.x, end.y, end.z);
+
+    glEnd();
+}
+
+void DebugRenderer::aabb(AABB b, vec3 color) {
+    glColor3f(color.r, color.g, color.b);
+
+    // AABB aabb = b.aabb + b.position + b.b.offset;
+
+    b = b + b.offset;
 
     glBegin(GL_LINES);
     // Bottom face
-    glVertex3f(aabb.x[0], aabb.y[0], aabb.z[0]);
-    glVertex3f(aabb.x[1], aabb.y[0], aabb.z[0]);
+    glVertex3f(b.x[0], b.y[0], b.z[0]);
+    glVertex3f(b.x[1], b.y[0], b.z[0]);
 
-    glVertex3f(aabb.x[1], aabb.y[0], aabb.z[0]);
-    glVertex3f(aabb.x[1], aabb.y[0], aabb.z[1]);
+    glVertex3f(b.x[1], b.y[0], b.z[0]);
+    glVertex3f(b.x[1], b.y[0], b.z[1]);
 
-    glVertex3f(aabb.x[1], aabb.y[0], aabb.z[1]);
-    glVertex3f(aabb.x[0], aabb.y[0], aabb.z[1]);
+    glVertex3f(b.x[1], b.y[0], b.z[1]);
+    glVertex3f(b.x[0], b.y[0], b.z[1]);
 
-    glVertex3f(aabb.x[0], aabb.y[0], aabb.z[1]);
-    glVertex3f(aabb.x[0], aabb.y[0], aabb.z[0]);
+    glVertex3f(b.x[0], b.y[0], b.z[1]);
+    glVertex3f(b.x[0], b.y[0], b.z[0]);
 
     // Top face
-    glVertex3f(aabb.x[0], aabb.y[1], aabb.z[0]);
-    glVertex3f(aabb.x[1], aabb.y[1], aabb.z[0]);
+    glVertex3f(b.x[0], b.y[1], b.z[0]);
+    glVertex3f(b.x[1], b.y[1], b.z[0]);
 
-    glVertex3f(aabb.x[1], aabb.y[1], aabb.z[0]);
-    glVertex3f(aabb.x[1], aabb.y[1], aabb.z[1]);
+    glVertex3f(b.x[1], b.y[1], b.z[0]);
+    glVertex3f(b.x[1], b.y[1], b.z[1]);
 
-    glVertex3f(aabb.x[1], aabb.y[1], aabb.z[1]);
-    glVertex3f(aabb.x[0], aabb.y[1], aabb.z[1]);
+    glVertex3f(b.x[1], b.y[1], b.z[1]);
+    glVertex3f(b.x[0], b.y[1], b.z[1]);
 
-    glVertex3f(aabb.x[0], aabb.y[1], aabb.z[1]);
-    glVertex3f(aabb.x[0], aabb.y[1], aabb.z[0]);
+    glVertex3f(b.x[0], b.y[1], b.z[1]);
+    glVertex3f(b.x[0], b.y[1], b.z[0]);
 
     // Vertical edges
-    glVertex3f(aabb.x[0], aabb.y[0], aabb.z[0]);
-    glVertex3f(aabb.x[0], aabb.y[1], aabb.z[0]);
+    glVertex3f(b.x[0], b.y[0], b.z[0]);
+    glVertex3f(b.x[0], b.y[1], b.z[0]);
 
-    glVertex3f(aabb.x[1], aabb.y[0], aabb.z[0]);
-    glVertex3f(aabb.x[1], aabb.y[1], aabb.z[0]);
+    glVertex3f(b.x[1], b.y[0], b.z[0]);
+    glVertex3f(b.x[1], b.y[1], b.z[0]);
 
-    glVertex3f(aabb.x[1], aabb.y[0], aabb.z[1]);
-    glVertex3f(aabb.x[1], aabb.y[1], aabb.z[1]);
+    glVertex3f(b.x[1], b.y[0], b.z[1]);
+    glVertex3f(b.x[1], b.y[1], b.z[1]);
 
-    glVertex3f(aabb.x[0], aabb.y[0], aabb.z[1]);
-    glVertex3f(aabb.x[0], aabb.y[1], aabb.z[1]);
+    glVertex3f(b.x[0], b.y[0], b.z[1]);
+    glVertex3f(b.x[0], b.y[1], b.z[1]);
     glEnd();
 }

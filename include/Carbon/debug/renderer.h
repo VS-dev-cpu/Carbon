@@ -20,8 +20,10 @@ class DebugRenderer {
     // Get Key State
     bool key(std::string k);
 
-    // Draw Physics Body
-    void draw(AABB b, vec3 color = vec3(-1, -1, -1), bool wireframe = false);
+    // Draw
+
+    void line(vec3 start, vec3 end, vec3 color = vec3(-1));
+    void aabb(AABB b, vec3 color = vec3(-1));
 
     // True when Key is Released
     bool keyPress(std::string k);
