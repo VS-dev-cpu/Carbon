@@ -139,6 +139,7 @@ DebugRenderer::~DebugRenderer() {
 
 bool DebugRenderer::update() {
     // Poll Events
+    keyrelease.clear();
     glfwPollEvents();
 
     // Update Window Buffer
@@ -176,17 +177,22 @@ bool DebugRenderer::key(std::string k) {
     return keyboard.count(glfwGetKeyScancode(scancode)) > 0;
 }
 
-void DebugRenderer::draw(Body b, vec3 color, bool wireframe) {
-    // Draw AABB
+bool DebugRenderer::keyPress(std::string k) {
+    int scancode = GLFW_STRING_SCANCODE[k];
+
+    if (scancode < 0)
+        return keyrelease.count(scancode);
+
+    return keyrelease.count(glfwGetKeyScancode(scancode)) > 0;
+}
+
+// Draw AABB
+void DebugRenderer::draw(AABB aabb, vec3 color, bool wireframe) {
     glColor3f(color.r, color.g, color.b);
 
-    AABB aabb = b.aabb + b.position + b.aabb.offset;
+    // AABB aabb = b.aabb + b.position + b.aabb.offset;
 
-    // for (int i = 0; i < 2; i++) {
-    //     aabb.x[i] += aabb.position->x;
-    //     aabb.y[i] += aabb.position->y;
-    //     aabb.z[i] += aabb.position->z;
-    // }
+    aabb = aabb + aabb.offset;
 
     glBegin(GL_LINES);
     // Bottom face

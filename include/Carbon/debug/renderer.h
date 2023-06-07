@@ -21,18 +21,23 @@ class DebugRenderer {
     bool key(std::string k);
 
     // Draw Physics Body
-    void draw(Body b, vec3 color = vec3(-1, -1, -1), bool wireframe = false);
+    void draw(AABB b, vec3 color = vec3(-1, -1, -1), bool wireframe = false);
+
+    // True when Key is Released
+    bool keyPress(std::string k);
 
   public:
     int width, height;
     vec2 mouse, scroll;
-    std::set<int> keyboard;
 
   private:
     GLFWwindow *window = nullptr;
 
     vec2 cameraRotation;
     vec3 cameraPosition;
+
+    std::set<int> keyboard;
+    std::set<int> keyrelease;
 
   private:
     void setPerspectiveProjection(float fovY, float aspectRatio,
@@ -67,8 +72,10 @@ class DebugRenderer {
 
         if (action == GLFW_PRESS)
             self->keyboard.insert(scancode);
-        else
+        else {
             self->keyboard.erase(scancode);
+            self->keyrelease.insert(scancode);
+        }
     }
 
     // Mouse Button Callback
@@ -79,18 +86,24 @@ class DebugRenderer {
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
             if (action == GLFW_PRESS) {
                 self->keyboard.insert(-1);
-            } else
+            } else {
                 self->keyboard.erase(-1);
+                self->keyrelease.insert(-1);
+            }
         } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
             if (action == GLFW_PRESS)
                 self->keyboard.insert(-2);
-            else
+            else {
                 self->keyboard.erase(-2);
+                self->keyrelease.insert(-2);
+            }
         } else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
             if (action == GLFW_PRESS)
                 self->keyboard.insert(-3);
-            else
+            else {
                 self->keyboard.erase(-3);
+                self->keyrelease.insert(-3);
+            }
         }
     }
 

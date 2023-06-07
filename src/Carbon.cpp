@@ -30,6 +30,27 @@ void Carbon::update() {
         if (A->hasGravity)
             A->velocity.y -= world.gravity * deltaTime;
 
+        // TODO: Update Partitions
+
+        for (int j = 0; j < (int)world.b.size(); j++) {
+            if (i != j) {
+                Body *B = &world.b[j];
+
+                // Check Collisions
+                if (!world.collisions[i].count(j)) {
+                    world.collisions[i].erase(j);
+
+                    // Check Collisions
+                    if (COLLISION::AABB_AABB(A->aabb + A->position,
+                                             B->aabb + B->position)) {
+
+                        A->velocity = vec3();
+                        A->angular_velocity = vec3();
+                    }
+                }
+            }
+        }
+
         // Move Object A
         if (!A->isStatic) {
             A->position += A->velocity * deltaTime;
@@ -38,31 +59,29 @@ void Carbon::update() {
             // A->velocity = 0;
         }
 
-        // TODO: Update Partitions
-
         // For Every Partition it's in
-        for (auto j : A->partitions) //< TODO: fix itarators
-        {
-            std::set<int> o = world.part.get(j);
+        // for (auto j : A->partitions) //< TODO: fix itarators
+        // {
+        //     std::set<int> o = world.part.get(j);
 
-            // For Every Object in Partition
-            for (auto k : o) {
-                Body *B = &world.b[k];
+        //     // For Every Object in Partition
+        //     for (auto k : o) {
+        //         Body *B = &world.b[k];
 
-                // Check Collisions
-                if (k != i && !world.collisions[i].count(k)) {
-                    // Check Collisions
-                    if (COLLISION::AABB_AABB(A->aabb + A->position,
-                                             B->aabb + B->position)) {
-                        vec3 norm;
-                        if (COLLISION::BODY_BODY(*A, *B, norm)) {
-                            // Collision!
-                            world.collisions[i].insert(k);
-                        }
-                    }
-                }
-            }
-        }
+        //         // Check Collisions
+        //         if (k != i && !world.collisions[i].count(k)) {
+        //             // Check Collisions
+        //             if (COLLISION::AABB_AABB(A->aabb + A->position,
+        //                                      B->aabb + B->position)) {
+        //                 vec3 norm;
+        //                 if (COLLISION::BODY_BODY(*A, *B, norm)) {
+        //                     // Collision!
+        //                     world.collisions[i].insert(k);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
 
@@ -126,6 +145,7 @@ int Carbon::add(Body *b, bool gravity, bool isStatic) {
     world.b.push_back(pb);
     // TODO: fix partitioning
     // std::vector<ivec3> v = world.part.add(pb.aabb, world.b.size() - 1);
+    // printf("%i\n", v.size());
     // for (int i = 0; i < (int)v.size(); i++)
     //     world.b[world.b.size() - 1].partitions.insert(v[i]);
 

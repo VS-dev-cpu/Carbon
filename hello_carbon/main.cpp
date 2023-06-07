@@ -6,21 +6,27 @@ int main() {
     Carbon C;
     printf("Init done\n");
 
-    Body b;
+    Body a, b;
 
-    b.position.x = 12.34f;
+    a.position.y = -2.0f;
+    b.position.y = 5.0f;
 
-    printf("Added Body %i\n", C.add(&b));
+    C.add(&a, false, true);
+    C.add(&b);
 
     DebugRenderer db;
 
     while (db.update()) {
         C.update();
 
+        if (db.keyPress("space"))
+            C.world.b[1].position.y = 5;
+
         // printf("%f\n", C.world.b[0].position.y);
         // printf("%f\n", C.world.b[0].position.y);
 
-        db.draw(C.world.b[0], vec3(1, .4, 0));
+        db.draw(C.world.b[0].aabb + C.world.b[0].position, vec3(1, 0, 0));
+        db.draw(C.world.b[1].aabb + C.world.b[1].position, vec3(1, .4, 0));
     }
 
     return 0;
