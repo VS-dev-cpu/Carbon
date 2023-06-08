@@ -12,7 +12,9 @@ add_library(Carbon
 
     # Core
     src/Carbon.cpp
-    src/collisions.cpp
+
+    # Utility
+    src/utility/collisions.cpp
 
     # Types
     src/types/vector.cpp

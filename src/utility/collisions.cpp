@@ -1,7 +1,7 @@
-#include <Carbon/collisions.hpp>
+#include <Carbon/utility/collisions.hpp>
 
 extern "C" {
-#include <Carbon/tri_intersect.h>
+#include <Carbon/utility/tri_intersect.h>
 }
 
 namespace COLLISION {
@@ -61,30 +61,22 @@ bool TRIANGLE_TRIANGLE(Triangle a, Triangle b) {
                             b.p[0].data(), b.p[1].data(), b.p[2].data());
 }
 
+bool MESH_MESH(Mesh a, Mesh b) {
+    int la = a.tri.size();
+    int lb = b.tri.size();
+
+    // Then Calculate Triangle-by-Triangle
+    for (int i = 0; i < la; i++)
+        for (int j = 0; j < lb; j++)
+            if (TRIANGLE_TRIANGLE(a.tri[i], b.tri[j]))
+                return true;
+
+    return false;
+}
+
 // Body (Triangles)
 bool BODY_BODY(Body a, Body b, vec3 &norm) {
-    // int la = a.c->vertices.size();
-    // int lb = b.c->vertices.size();
-    // // Then Calculate Triangle-by-Triangle
-    // for (int i = 0; i < la / 3; i++) {
-    //     for (int j = 0; j < lb / 3; j++) {
-    //         vec3 normal = a.c->vertices[i].normal;
-    //         Triangle ta;
-    //         ta[0] = a.c->vertices[i].position + *a.position;
-    //         ta[1] = a.c->vertices[i + 1].position + *a.position;
-    //         ta[2] = a.c->vertices[i + 2].position + *a.position;
-
-    //         Triangle tb;
-    //         tb[0] = b.c->vertices[j].position + *b.position;
-    //         tb[1] = b.c->vertices[j + 1].position + *b.position;
-    //         tb[2] = b.c->vertices[j + 2].position + *b.position;
-
-    //         if (TRIANGLE_TRIANGLE(ta, tb)) {
-    //             norm = normal;
-    //             return true;
-    //         }
-    //     }
-    // }
+    switch (a.collider.type) {};
 
     // This is the worst case...
     return false;
