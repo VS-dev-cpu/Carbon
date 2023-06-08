@@ -25,7 +25,11 @@ void log_vcustom(char type, const char *tag, const char *message,
     stime(date);
 
     sprintf(msg, "[%s] %s [%c]  %s\n", date, tag, type, message);
+
+    // Print Out
     vprintf(msg, args);
+
+    // TODO: Write to File
 }
 
 void log_custom(char type, const char *tag, const char *message, ...) {
