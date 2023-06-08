@@ -45,7 +45,8 @@ void log_system(const char *tag, const char *message, ...) {
     va_list args;
     va_start(args, message);
 
-    log_vcustom('S', tag, message, args);
+    if (log_enable_system)
+        log_vcustom('S', tag, message, args);
 
     va_end(args);
 }
@@ -54,7 +55,8 @@ void log_debug(const char *tag, const char *message, ...) {
     va_list args;
     va_start(args, message);
 
-    log_vcustom('D', tag, message, args);
+    if (log_enable_debug)
+        log_vcustom('D', tag, message, args);
 
     va_end(args);
 }
@@ -63,7 +65,8 @@ void log_warning(const char *tag, const char *message, ...) {
     va_list args;
     va_start(args, message);
 
-    log_vcustom('W', tag, message, args);
+    if (log_enable_warning)
+        log_vcustom('W', tag, message, args);
 
     va_end(args);
 }
@@ -72,7 +75,8 @@ void log_error(const char *tag, const char *message, ...) {
     va_list args;
     va_start(args, message);
 
-    log_vcustom('E', tag, message, args);
+    if (log_enable_error)
+        log_vcustom('E', tag, message, args);
 
     va_end(args);
 }
