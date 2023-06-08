@@ -1,7 +1,8 @@
-#include "Carbon/types/types.h"
-#include <Carbon/collisions.h>
+#include <Carbon/collisions.hpp>
 
+extern "C" {
 #include <Carbon/tri_intersect.h>
+}
 
 namespace COLLISION {
 
@@ -56,7 +57,8 @@ bool SPHERE_SPHERE(Sphere a, Sphere b) {
 
 // Triangle
 bool TRIANGLE_TRIANGLE(Triangle a, Triangle b) {
-    return NoDivTriTriIsect(a[0].p, a[1].p, a[2].p, b[0].p, b[1].p, b[2].p);
+    return NoDivTriTriIsect(a.p[0].data(), a.p[1].data(), a.p[2].data(),
+                            b.p[0].data(), b.p[1].data(), b.p[2].data());
 }
 
 // Body (Triangles)

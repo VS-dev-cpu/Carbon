@@ -6,17 +6,22 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 include_directories("include")
 
-project(Carbon VERSION 0.1 LANGUAGES CXX)
+project(Carbon VERSION 0.1 LANGUAGES C CXX)
 
 add_library(Carbon
+
+    # Core
     src/Carbon.cpp
-
-    src/types/vector.cpp
-    src/types/types.cpp
-
     src/collisions.cpp
 
+    # Types
+    src/types/vector.cpp
+    src/types/colliders.cpp
+    src/types/types.cpp
+
+    # Debug
     src/debug/renderer.cpp
+    src/debug/log.c
 )
 
 target_link_libraries(Carbon glfw GL)

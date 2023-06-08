@@ -2,7 +2,6 @@
 
 // Include(s)
 #include <math.h>
-#include <stdio.h>
 
 // Radian-Degree Conversion Functions
 #define rads(d) (d * M_PI / 180.0f)
@@ -136,6 +135,9 @@ struct vec2 {
 
     // Normalize
     vec2 normalize();
+
+    // Get Data
+    float *data();
 };
 
 // 3D Vector
@@ -159,7 +161,7 @@ struct vec3 {
     // ---- Constructors
 
     // vec3(x, y, z) Constructor
-    vec3(float x, float y, float z);
+    vec3(float x, float y, float z = 0.0f);
 
     // vec3({x, y, z}) Constructor
     vec3(float xyz[3]);
@@ -264,4 +266,7 @@ struct vec3 {
 
     // Normalize
     vec3 normalize();
+
+    // Get Data
+    float *data();
 };

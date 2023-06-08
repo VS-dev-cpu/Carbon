@@ -1,5 +1,6 @@
-#include "Carbon/collisions.h"
-#include <Carbon/Carbon.h>
+#include <Carbon/Carbon.hpp>
+
+#include <time.h>
 
 Carbon::Carbon(float partition_size) {
     // Setup World
@@ -41,8 +42,8 @@ void Carbon::update() {
                     world.collisions[i].erase(j);
 
                     // Check Collisions
-                    if (COLLISION::AABB_AABB(A->aabb + A->position,
-                                             B->aabb + B->position)) {
+                    if (COLLISION::AABB_AABB(A->trigger + A->position,
+                                             B->trigger + B->position)) {
 
                         A->velocity = vec3();
                         A->angular_velocity = vec3();
@@ -85,44 +86,42 @@ void Carbon::update() {
     }
 }
 
-// Link Body to Physics Engine
-int Carbon::add(Body *b, bool gravity, bool isStatic) {
-    Body pb;
+// Add Mesh
+int Carbon::add(Mesh mesh, bool gravity, bool isStatic) {
+    // Add Body
+    int id = world.b.size();
+    world.b.push_back(Body());
+    Body *b = &world.b[id];
 
-    pb.position = b->position;
-    pb.rotation = b->rotation;
+    // Set Up Collider
+    b->collider.collider = mesh;
+    b->collider.type = 1;
 
-    // pb.c = b->c;
+    b->collider.position = &b->position;
+    b->collider.rotation = &b->rotation;
 
-    std::vector<vec3> vertices = {vec3(-0.5f, -0.5f, -0.5f),
-                                  vec3(0.5f, 0.5f, 0.5f)};
+    // Create Trigger (AABB)
+    for (int i = 0; i < (int)mesh.tri.size(); i++) {
+        for (int j = 0; j < 3; j++) {
+            vec3 p = mesh.tri[i].p[j];
 
-    // Get AABB
-    for (int i = 0; i < (int)vertices.size(); i++) {
-        vec3 p = vertices[i];
+            b->trigger.x[0] = fmin(p.x, b->trigger.x[0]);
+            b->trigger.x[1] = fmax(p.x, b->trigger.x[1]);
 
-        if (p.x < pb.aabb.x[0])
-            pb.aabb.x[0] = p.x;
-        if (p.x > pb.aabb.x[1])
-            pb.aabb.x[1] = p.x;
+            b->trigger.y[0] = fmin(p.y, b->trigger.y[0]);
+            b->trigger.y[1] = fmax(p.y, b->trigger.y[1]);
 
-        if (p.y < pb.aabb.y[0])
-            pb.aabb.y[0] = p.y;
-        if (p.y > pb.aabb.y[1])
-            pb.aabb.y[1] = p.y;
-
-        if (p.z < pb.aabb.z[0])
-            pb.aabb.z[0] = p.z;
-        if (p.x > pb.aabb.z[1])
-            pb.aabb.z[1] = p.z;
+            b->trigger.z[0] = fmin(p.z, b->trigger.z[0]);
+            b->trigger.z[1] = fmax(p.z, b->trigger.z[1]);
+        }
     }
 
-    // Get "MASS"
+    // Calculate Weight
     vec3 size;
-    size.x = abs(pb.aabb.x[0] - pb.aabb.x[1]);
-    size.y = abs(pb.aabb.y[0] - pb.aabb.y[1]);
-    size.z = abs(pb.aabb.z[0] - pb.aabb.z[1]);
-    pb.mass = size.x * size.y * size.z;
+    size.x = abs(b->trigger.x[0] - b->trigger.x[1]);
+    size.y = abs(b->trigger.y[0] - b->trigger.y[1]);
+    size.z = abs(b->trigger.z[0] - b->trigger.z[1]);
+    b->weight = size.x * size.y * size.z * b->mass;
 
     // Create Trigger
     /*pb.t.position = &b->position;
@@ -137,12 +136,9 @@ int Carbon::add(Body *b, bool gravity, bool isStatic) {
     }*/
 
     // Set Gravity
-    pb.hasGravity = gravity;
-    pb.isStatic = isStatic;
+    b->hasGravity = gravity;
+    b->isStatic = isStatic;
 
-    // Add Object
-    int id = world.b.size();
-    world.b.push_back(pb);
     // TODO: fix partitioning
     // std::vector<ivec3> v = world.part.add(pb.aabb, world.b.size() - 1);
     // printf("%i\n", v.size());
@@ -153,8 +149,7 @@ int Carbon::add(Body *b, bool gravity, bool isStatic) {
 }
 
 float Carbon::time() {
-    static const auto startTime = std::chrono::high_resolution_clock::now();
-    const auto currentTime = std::chrono::high_resolution_clock::now();
-    const std::chrono::duration<float> duration = currentTime - startTime;
-    return duration.count();
+    struct timespec res;
+    clock_gettime(CLOCK_MONOTONIC, &res);
+    return (1000.0f * res.tv_sec + (double)res.tv_nsec / 1e6) / 1000.0f;
 }

@@ -1,5 +1,4 @@
-#include <Carbon/types/vector.h>
-#include <linux/limits.h>
+#include <Carbon/types/vector.hpp>
 
 // -------- Vec2 --------
 
@@ -201,6 +200,9 @@ float vec2::distance(vec2 v) {
 
 // Normalize
 vec2 vec2::normalize() { return *this / this->length(); }
+
+// Get Data
+float *vec2::data() { return &x; }
 
 // -------- Vec3 --------
 
@@ -425,3 +427,6 @@ float vec3::distance(vec3 v) {
 
 // Normalize
 vec3 vec3::normalize() { return *this / this->length(); }
+
+// Get Data
+float *vec3::data() { return &x; }

@@ -26,7 +26,6 @@
  * Journal of Graphics Tools, 2(2), 1997
  */
 
-extern "C" {
 #include <math.h>
 #define FABS(x) (float(fabs(x))) /* implement as is fastest on your machine */
 
@@ -327,5 +326,4 @@ int NoDivTriTriIsect(float V0[3], float V1[3], float V2[3], float U0[3],
     if (isect1[1] < isect2[0] || isect2[1] < isect1[0])
         return 0;
     return 1;
-}
 }

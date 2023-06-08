@@ -1,45 +1,16 @@
 #pragma once
 
-#include <Carbon/types/vector.h>
+#include <Carbon/types/colliders.hpp>
 
-#include <algorithm>
-#include <array>
-#include <bits/stdc++.h>
+#include <map>
+#include <set>
 #include <unordered_map>
 
-// (low effort) 3D Intiger Vector (for Partition Indexing)
+// Integer Vectors
+typedef int ivec1;
+typedef std::array<int, 2> ivec2;
 typedef std::array<int, 3> ivec3;
-
-// Axis-Aligned Bounding-Box
-struct AABB {
-    vec3 offset;
-
-    vec1 x[2];
-    vec1 y[2];
-    vec1 z[2];
-
-    AABB operator+(vec3 position);
-};
-
-struct Sphere {
-    vec3 offset;
-
-    float radius = 1.0f;
-
-    Sphere operator+(vec3 position);
-};
-
-// Triangle
-typedef vec3 Triangle[3];
-
-// Mesh
-struct Mesh {
-    vec3 offset;
-
-    // std::vector<Triangle> tri;
-
-    // Mesh operator+(vec3 position) { return {this->offset + position}; }
-};
+typedef std::array<int, 4> ivec4;
 
 // Physics Body
 struct Body {
@@ -49,12 +20,12 @@ struct Body {
     vec3 rotation;
 
     // Collider(s)
-    Mesh m;
-    AABB aabb;
+    Collider collider;
+    AABB trigger;
 
     // Partitions containing it
     // TODO: something about it
-    std::set<ivec3> partitions;
+    // std::set<ivec3> partitions;
 
     // Properties
     bool isStatic = false;   // has collider, forces doesn't have effect
@@ -70,12 +41,6 @@ struct Body {
     // Forces
     vec3 velocity;
     vec3 angular_velocity;
-
-    // Add Velocity [Force]
-    void addVelocity(float amount, vec3 v);
-
-    // Add Angular Velocity [Force]
-    void addAngularVelocity(float amount, vec3 av, vec3 center = vec3());
 
   private:
 };
@@ -111,13 +76,15 @@ struct Partition {
 
 // Physics World
 struct World {
-    // Every Body in the Physics World
+    // Bodies
     std::vector<Body> b;
+
+    // Collisions
     std::unordered_map<int, std::set<int>> collisions;
 
-    // World Partitioning
+    // Spacial Partition
     Partition part;
 
-    // The Physics World's Gravitational Force
-    float gravity = 9.807f; // Earth's Gravity
+    // Gravitational Force
+    float gravity = 9.807f;
 };

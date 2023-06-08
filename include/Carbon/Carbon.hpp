@@ -1,14 +1,10 @@
 #pragma once
 
-#include <chrono>
-#include <iostream>
-#include <pthread.h>
+#include <Carbon/collisions.hpp>
+#include <Carbon/debug/renderer.hpp>
+#include <Carbon/types/types.hpp>
 
-#include <Carbon/types/types.h>
-
-#include <Carbon/collisions.h>
-
-#include <Carbon/debug/renderer.h>
+#include <Carbon/debug/log.hpp>
 
 class Carbon {
   public:
@@ -17,7 +13,8 @@ class Carbon {
 
     void update();
 
-    int add(Body *b, bool gravity = true, bool isStatic = false);
+    // Add Mesh
+    int add(Mesh m, bool gravity = true, bool isStatic = false);
 
     void blow(vec3 pos, float strength);
 

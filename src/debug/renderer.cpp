@@ -1,4 +1,4 @@
-#include <Carbon/debug/renderer.h>
+#include <Carbon/debug/renderer.hpp>
 #include <GL/gl.h>
 
 // KeyCodes
@@ -139,7 +139,7 @@ DebugRenderer::~DebugRenderer() {
 
 bool DebugRenderer::update() {
     // Poll Events
-    keyrelease.clear();
+    keypress.clear();
     glfwPollEvents();
 
     // Update Window Buffer
@@ -181,9 +181,9 @@ bool DebugRenderer::keyPress(std::string k) {
     int scancode = GLFW_STRING_SCANCODE[k];
 
     if (scancode < 0)
-        return keyrelease.count(scancode);
+        return keypress.count(scancode);
 
-    return keyrelease.count(glfwGetKeyScancode(scancode)) > 0;
+    return keypress.count(glfwGetKeyScancode(scancode)) > 0;
 }
 
 // Draw
@@ -204,7 +204,11 @@ void DebugRenderer::aabb(AABB b, vec3 color) {
 
     // AABB aabb = b.aabb + b.position + b.b.offset;
 
-    b = b + b.offset;
+    for (int i = 0; i < 2; i++) {
+        b.x[i] += b.offset.x;
+        b.y[i] += b.offset.y;
+        b.z[i] += b.offset.z;
+    }
 
     glBegin(GL_LINES);
     // Bottom face
@@ -245,5 +249,17 @@ void DebugRenderer::aabb(AABB b, vec3 color) {
 
     glVertex3f(b.x[0], b.y[0], b.z[1]);
     glVertex3f(b.x[0], b.y[1], b.z[1]);
+    glEnd();
+}
+
+void DebugRenderer::mesh(Mesh m, vec3 color) {
+    glColor3f(color.r, color.g, color.b);
+
+    glBegin(GL_TRIANGLES);
+
+    for (int i = 0; i < m.tri.size(); i++)
+        for (int j = 0; j < 3; j++)
+            glVertex3f(m.tri[i].p[j].x, m.tri[i].p[j].y, m.tri[i].p[j].z);
+
     glEnd();
 }

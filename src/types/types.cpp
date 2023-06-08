@@ -1,31 +1,4 @@
-#include <Carbon/types/types.h>
-
-// AABB
-
-AABB AABB::operator+(vec3 position) {
-    return {this->offset,
-            this->x[0] + position.x,
-            this->x[1] + position.x,
-            this->y[0] + position.y,
-            this->y[1] + position.y,
-            this->z[0] + position.z,
-            this->z[1] + position.z};
-}
-
-// Sphere
-
-Sphere Sphere::operator+(vec3 position) {
-    return {this->offset + position, this->radius};
-}
-
-// Body
-
-void Body::addVelocity(float amount, vec3 v) { this->velocity += v * amount; }
-
-void Body::addAngularVelocity(float amount, vec3 av, vec3 center) {
-    // TODO
-    // no idea how to do it
-}
+#include <Carbon/types/types.hpp>
 
 // Partition
 

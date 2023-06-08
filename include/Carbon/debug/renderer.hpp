@@ -1,6 +1,9 @@
 #pragma once
 
-#include <Carbon/types/types.h>
+#include <Carbon/types/types.hpp>
+
+#include <set>
+#include <string>
 
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
@@ -24,6 +27,7 @@ class DebugRenderer {
 
     void line(vec3 start, vec3 end, vec3 color = vec3(-1));
     void aabb(AABB b, vec3 color = vec3(-1));
+    void mesh(Mesh m, vec3 color = vec3(-1));
 
     // True when Key is Released
     bool keyPress(std::string k);
@@ -39,7 +43,7 @@ class DebugRenderer {
     vec3 cameraPosition;
 
     std::set<int> keyboard;
-    std::set<int> keyrelease;
+    std::set<int> keypress;
 
   private:
     void setPerspectiveProjection(float fovY, float aspectRatio,
@@ -72,12 +76,11 @@ class DebugRenderer {
                              int action, int mods) {
         DebugRenderer *self = getRenderer(window);
 
-        if (action == GLFW_PRESS)
+        if (action == GLFW_PRESS) {
             self->keyboard.insert(scancode);
-        else {
+            self->keypress.insert(scancode);
+        } else
             self->keyboard.erase(scancode);
-            self->keyrelease.insert(scancode);
-        }
     }
 
     // Mouse Button Callback
@@ -88,24 +91,21 @@ class DebugRenderer {
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
             if (action == GLFW_PRESS) {
                 self->keyboard.insert(-1);
-            } else {
+                self->keypress.insert(-1);
+            } else
                 self->keyboard.erase(-1);
-                self->keyrelease.insert(-1);
-            }
         } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-            if (action == GLFW_PRESS)
+            if (action == GLFW_PRESS) {
                 self->keyboard.insert(-2);
-            else {
+                self->keypress.insert(-2);
+            } else
                 self->keyboard.erase(-2);
-                self->keyrelease.insert(-2);
-            }
         } else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
-            if (action == GLFW_PRESS)
+            if (action == GLFW_PRESS) {
                 self->keyboard.insert(-3);
-            else {
+                self->keypress.insert(-3);
+            } else
                 self->keyboard.erase(-3);
-                self->keyrelease.insert(-3);
-            }
         }
     }
 
@@ -138,6 +138,6 @@ class DebugRenderer {
         self->scroll.x = x;
         self->scroll.y = y;
 
-        self->cameraPosition.z += y / 10.0f;
+        self->cameraPosition.z += y / 2.0f;
     }
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Carbon/types/types.h>
+#include <Carbon/types/types.hpp>
 
 namespace COLLISION {
 
