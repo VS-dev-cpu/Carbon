@@ -4,6 +4,17 @@
 #include <string.h>
 #include <time.h>
 
+// Enable/Disable Logging
+int log_enable_system = 1;
+int log_enable_debug = 1;
+int log_enable_warning = 1;
+int log_enable_error = 1;
+
+void log_show_system(int en) { log_enable_system = en; }
+void log_show_debug(int en) { log_enable_debug = en; }
+void log_show_warning(int en) { log_enable_warning = en; }
+void log_show_error(int en) { log_enable_error = en; }
+
 // Get Time as String
 void stime(char *str) {
     time_t rawtime;
