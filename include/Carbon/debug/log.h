@@ -3,6 +3,7 @@
 
 #include <stdarg.h>
 
+// Enable / Disable Logs
 void log_show_system(int en);
 void log_show_debug(int en);
 void log_show_warning(int en);
