@@ -17,35 +17,13 @@ struct AABB {
     AABB operator+(vec3 position);
 };
 
-struct Box {
-    vec3 offset{};
-    vec3 rotation{};
-
-    vec3 size{};
-};
-
-struct Sphere {
-    vec3 offset{};
-
-    float radius{};
-
-    Sphere operator+(vec3 position);
-};
-
-struct Capsule {
-    vec3 offset;
-    vec3 rotation{};
-
-    vec3 a{}, b{};
-
-    float radius{};
-};
-
 // Triangle
 struct Triangle {
     vec3 offset;
 
     vec3 p[3];
+
+    Triangle operator+(vec3 position);
 };
 
 // Mesh
@@ -54,14 +32,5 @@ struct Mesh {
 
     std::vector<Triangle> tri{};
 
-    // Mesh operator+(vec3 position) { return {this->offset + position}; }
-};
-
-// Physics Collider
-struct Collider {
-    std::any collider{};
-    unsigned int type{};
-
-    vec3 *position{};
-    vec3 *rotation{};
+    Mesh operator+(vec3 position);
 };

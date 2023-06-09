@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Carbon/types/colliders.hpp>
+#include <Carbon/types/matrix.hpp>
+#include <Carbon/types/vector.hpp>
 
 #include <map>
 #include <set>
@@ -16,12 +18,12 @@ typedef std::array<int, 4> ivec4;
 struct Body {
   public:
     // Transform
-    vec3 position;
-    vec3 rotation;
+    vec3 position{};
+    vec3 rotation{};
 
     // Collider(s)
-    Collider collider;
-    AABB trigger;
+    Mesh mesh{};
+    AABB trigger{};
 
     // Partitions containing it
     // TODO: something about it
@@ -39,8 +41,8 @@ struct Body {
     float weight = 1.0f;
 
     // Forces
-    vec3 velocity;
-    vec3 angular_velocity;
+    vec3 velocity{};
+    vec3 angular_velocity{};
 
   private:
 };

@@ -5,8 +5,9 @@
 #include <set>
 #include <string>
 
-#include <GL/gl.h>
+#include <GL/glad.h>
 #include <GLFW/glfw3.h>
+#include <vector>
 
 // Debug Renderer
 class DebugRenderer {
@@ -29,6 +30,8 @@ class DebugRenderer {
     void aabb(AABB b, vec3 color = vec3(-1));
     void mesh(Mesh m, vec3 color = vec3(-1));
 
+    void add(Body *b);
+
     // True when Key is Released
     bool keyPress(std::string k);
 
@@ -39,6 +42,12 @@ class DebugRenderer {
   private:
     GLFWwindow *window = nullptr;
 
+    unsigned int shader;
+    unsigned int uniform[4]; // model, view, projection, color
+
+    std::vector<Body *> body;
+    std::vector<unsigned int> VAO;
+
     vec2 cameraRotation;
     vec3 cameraPosition;
 
@@ -46,16 +55,9 @@ class DebugRenderer {
     std::set<int> keypress;
 
   private:
-    void setPerspectiveProjection(float fovY, float aspectRatio,
-                                  float nearPlane, float farPlane) {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glFrustum(-aspectRatio * nearPlane * tan(fovY / 2.0f),
-                  aspectRatio * nearPlane * tan(fovY / 2.0f),
-                  -nearPlane * tan(fovY / 2.0f), nearPlane * tan(fovY / 2.0f),
-                  nearPlane, farPlane);
-        glMatrixMode(GL_MODELVIEW);
-    }
+    // Draw Array
+    void draw(unsigned int VAO, unsigned int size, vec3 position,
+              vec3 rotation);
 
     // Get DebugRenderer from Window
     static DebugRenderer *getRenderer(GLFWwindow *window) {

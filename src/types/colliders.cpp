@@ -12,8 +12,14 @@ AABB AABB::operator+(vec3 position) {
             this->z[1]};
 }
 
-// Sphere
+// Triangle
 
-Sphere Sphere::operator+(vec3 position) {
-    return {this->offset + position, this->radius};
+Triangle Triangle::operator+(vec3 position) {
+    return {this->offset + position, this->p[0], this->p[1], this->p[2]};
+}
+
+// Mesh
+
+Mesh Mesh::operator+(vec3 position) {
+    return {this->offset + position, this->tri};
 }

@@ -1,3 +1,4 @@
+#include "Carbon/debug/renderer.hpp"
 #include <Carbon/Carbon.hpp>
 
 #include <time.h>
@@ -12,7 +13,7 @@ Carbon::Carbon(float partition_size) {
 Carbon::~Carbon() {}
 
 // Update Physics Engine
-void Carbon::update() {
+bool Carbon::update() {
     // Timing
     past = now;
     now = time();
@@ -42,9 +43,7 @@ void Carbon::update() {
                     world.collisions[i].erase(j);
 
                     // Check Collisions
-                    if (COLLISION::AABB_AABB(A->trigger + A->position,
-                                             B->trigger + B->position)) {
-
+                    if (COLLISION::BODY_BODY(*A, *B)) {
                         A->velocity = vec3();
                         A->angular_velocity = vec3();
                     }
@@ -84,6 +83,13 @@ void Carbon::update() {
         //     }
         // }
     }
+
+#ifdef DEBUG_RENDERER
+    if (!db.update())
+        return false;
+#endif
+
+    return true;
 }
 
 // Add Mesh
@@ -94,11 +100,7 @@ int Carbon::add(Mesh mesh, bool gravity, bool isStatic) {
     Body *b = &world.b[id];
 
     // Set Up Collider
-    b->collider.collider = mesh;
-    b->collider.type = 1;
-
-    b->collider.position = &b->position;
-    b->collider.rotation = &b->rotation;
+    b->mesh = mesh;
 
     // Create Trigger (AABB)
     for (int i = 0; i < (int)mesh.tri.size(); i++) {
@@ -144,6 +146,11 @@ int Carbon::add(Mesh mesh, bool gravity, bool isStatic) {
     // printf("%i\n", v.size());
     // for (int i = 0; i < (int)v.size(); i++)
     //     world.b[world.b.size() - 1].partitions.insert(v[i]);
+
+#ifdef DEBUG_RENDERER
+    // Add to DebugRenderer
+    db.add(b);
+#endif
 
     return id;
 }
