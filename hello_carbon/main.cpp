@@ -12,12 +12,14 @@ int main() {
     C.add(load_obj("cube.obj"), false, true);
     C.add(load_obj("cube.obj"));
 
-    while (C.update()) {
-        if (C.db.keyPress("space"))
-            C.world.b[1].position.y = 10;
+    float now = C.time(), then = now;
+    while (true) {
+        then = now;
+        now = C.time();
+        float deltaTime = now - then;
 
-        // printf("%f\n", C.world.b[0].position.y);
-        // printf("%f\n", C.world.b[0].position.y);
+        C.update(deltaTime);
+        printf("%f\n", C.world.b[0].position.y);
     }
 
     return 0;

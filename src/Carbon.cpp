@@ -1,4 +1,3 @@
-#include "Carbon/debug/renderer.hpp"
 #include <Carbon/Carbon.hpp>
 
 #include <time.h>
@@ -6,19 +5,13 @@
 Carbon::Carbon(float partition_size) {
     // Setup World
     world.part.size = vec3(partition_size, partition_size, partition_size);
-    now = time();
 }
 
 // Destroy Physics Engine
 Carbon::~Carbon() {}
 
 // Update Physics Engine
-bool Carbon::update() {
-    // Timing
-    past = now;
-    now = time();
-    deltaTime = (float)(now - past);
-
+void Carbon::update(const float &deltaTime) {
     // Update Physics World
 
     // Reset Collisions
@@ -83,13 +76,6 @@ bool Carbon::update() {
         //     }
         // }
     }
-
-#ifdef DEBUG_RENDERER
-    if (!db.update())
-        return false;
-#endif
-
-    return true;
 }
 
 // Add Mesh

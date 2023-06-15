@@ -5,8 +5,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 include_directories("include")
 
-option(DEBUG_RENDERER "Enable Debug Renderer" ON)
-
 # Source Files
 set(SOURCES
     # Core
@@ -27,21 +25,6 @@ set(SOURCES
 
 # Libraries
 set(LIBRARIES dl)
-
-# Include Debug Renderer
-if(DEBUG_RENDERER)
-    list(APPEND SOURCES
-        src/debug/renderer.cpp
-        src/GL/glad.c
-    )
-
-    list(APPEND LIBRARIES
-        glfw
-        GL
-    )
-
-    add_compile_definitions(DEBUG_RENDERER)
-endif()
 
 # Physics Engine Project
 project(Carbon VERSION 0.1 LANGUAGES C CXX)
