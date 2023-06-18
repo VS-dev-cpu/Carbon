@@ -1,8 +1,7 @@
 #pragma once
 
 #include <Carbon/types/colliders.hpp>
-#include <Carbon/types/matrix.hpp>
-#include <Carbon/types/vector.hpp>
+#include <mathutil/matrix.hpp>
 
 #include <map>
 #include <set>
