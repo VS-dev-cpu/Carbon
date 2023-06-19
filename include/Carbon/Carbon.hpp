@@ -3,7 +3,7 @@
 #include <Carbon/types/types.hpp>
 #include <Carbon/utility/collisions.hpp>
 
-#include <Carbon/debug/log.hpp>
+#include <mathutil/common.hpp>
 
 class Carbon {
   public:
@@ -14,8 +14,6 @@ class Carbon {
 
     // Add Mesh
     int add(Mesh m, bool gravity = true, bool isStatic = false);
-
-    float time();
 
   public:
     World world;

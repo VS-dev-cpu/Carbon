@@ -12,10 +12,10 @@ int main() {
     C.add(load_obj("cube.obj"), false, true);
     C.add(load_obj("cube.obj"));
 
-    float now = C.time(), then = now;
+    float now = time(), then = now;
     while (true) {
         then = now;
-        now = C.time();
+        now = time();
         float deltaTime = now - then;
 
         C.update(deltaTime);

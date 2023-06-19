@@ -140,9 +140,3 @@ int Carbon::add(Mesh mesh, bool gravity, bool isStatic) {
 
     return id;
 }
-
-float Carbon::time() {
-    struct timespec res;
-    clock_gettime(CLOCK_MONOTONIC, &res);
-    return (1000.0f * res.tv_sec + (double)res.tv_nsec / 1e6) / 1000.0f;
-}

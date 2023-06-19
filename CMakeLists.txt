@@ -14,9 +14,6 @@ set(SOURCES
     # Types
     src/types/colliders.cpp
     src/types/types.cpp
-
-    # Debug
-    src/debug/log.c
 )
 
 # Libraries
